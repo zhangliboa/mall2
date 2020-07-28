@@ -80,11 +80,14 @@ export default {
     this.getHomeGoods("sell");
   },
   activated() {
+    console.log("进来时1"+this.saveY)
     this.$refs.scroll.scrollTo(0, this.saveY, 0);
+    console.log("进来时"+this.saveY)
     this.$refs.scroll.refresh();
   },
   deactivated() {
     this.saveY = this.$refs.scroll.getScrollY();
+    console.log("离开时"+this.saveY)
   },
   mounted() {
     // 1. 监听item中图片加载完成
