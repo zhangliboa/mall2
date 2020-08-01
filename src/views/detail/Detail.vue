@@ -7,13 +7,21 @@
       <detail-base-info :goods="goods"></detail-base-info>
       <detail-shop-info :shop="shop"></detail-shop-info>
       <detail-goods-info :detail-info="detailInfo"></detail-goods-info>
-    <detail-param-info :param-info="paramInfo"></detail-param-info>
+      <detail-param-info :param-info="paramInfo"></detail-param-info>
+      <detail-comment-info :comment-info="commentInfo"></detail-comment-info>
+      <goods-list :goods="recommendList"></goods-list>
     </scroll>
   </div>
 </template>
 
 <script>
-import { getDetail, Goods, Shop, GoodsParam } from "network/detail";
+import {
+  getDetail,
+  Goods,
+  Shop,
+  GoodsParam,
+  getRecommend
+} from "network/detail";
 
 import Scroll from "components/common/scroll/Scroll";
 
@@ -22,7 +30,11 @@ import DetailSwiper from "./childComps/DetailSwiper";
 import DetailBaseInfo from "./childComps/DetailBaseInfo";
 import DetailShopInfo from "./childComps/DetailShopInfo";
 import DetailGoodsInfo from "./childComps/DetailGoodsInfo";
-  import DetailParamInfo from './childComps/DetailParamInfo'
+import DetailParamInfo from "./childComps/DetailParamInfo";
+import DetailCommentInfo from "./childComps/DetailCommentInfo";
+import GoodsList from "components/content/goods/GoodsList";
+// import { debounce } from "common/utils";
+import { itemListenerMixin } from "common/mixin";
 
 export default {
   name: "Detail",
@@ -33,9 +45,12 @@ export default {
       goods: {},
       shop: {},
       detailInfo: {},
-      paramInfo:{}
+      paramInfo: {},
+      commentInfo: {},
+      recommendList: []
     };
   },
+  mixins:[itemListenerMixin],
   components: {
     Scroll,
     DetailNavBar,
@@ -43,11 +58,27 @@ export default {
     DetailBaseInfo,
     DetailShopInfo,
     DetailGoodsInfo,
-    DetailParamInfo
+    DetailParamInfo,
+    DetailCommentInfo,
+    GoodsList
   },
   created() {
     this.iid = this.$route.params.id;
     this.getDetailData();
+    this.getRecommendData();
+  },
+  // mounted(){
+  //   // 1. 监听item中图片加载完成
+  //   const refresh = debounce(this.$refs.scroll.refresh, 10);
+  //   this.itemImgListener = () => {
+  //     // this.$refs.scroll.refresh();
+  //     // 防抖函数
+  //     refresh();
+  //   }
+  //   this.$bus.$on('itemImgLoad',this.itemImgListener)
+  // },
+  destroyed(){
+     this.$bus.$off('itemImgLoad',this.itemImgListener)
   },
   methods: {
     getDetailData() {
@@ -67,7 +98,20 @@ export default {
         // 2.5获取商品信息
         this.detailInfo = data.detailInfo;
         // 2.6保存参数信息
-        this.paramInfo = new GoodsParam(data.itemParams.info, data.itemParams.rule);
+        this.paramInfo = new GoodsParam(
+          data.itemParams.info,
+          data.itemParams.rule
+        );
+        // 2.7保存评论信息
+        if (data.rate.list) {
+          this.commentInfo = data.rate.list;
+        }
+      });
+    },
+    getRecommendData() {
+      getRecommend().then((res, error) => {
+        if (error) return;
+        this.recommendList = res.data.list;
       });
     }
   }

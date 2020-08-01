@@ -39,7 +39,8 @@ import TabControl from "components/common/tabcontrol/TabControl";
 import GoodsList from "components/content/goods/GoodsList";
 import Scroll from "components/common/scroll/Scroll";
 import BackTop from "components/content/backTop/BackTop";
-import { debounce } from "common/utils";
+// import { debounce } from "common/utils";
+import { itemListenerMixin } from "common/mixin";
 
 import { getHomeMultidata, getHomeGoods } from "network/home";
 
@@ -61,6 +62,7 @@ export default {
       saveY: 0
     };
   },
+  mixins:[itemListenerMixin],
   components: {
     HomeSwiper,
     RecommendView,
@@ -80,23 +82,14 @@ export default {
     this.getHomeGoods("sell");
   },
   activated() {
-    console.log("进来时1"+this.saveY)
     this.$refs.scroll.scrollTo(0, this.saveY, 0);
-    console.log("进来时"+this.saveY)
     this.$refs.scroll.refresh();
   },
   deactivated() {
+    // 1.保存y值
     this.saveY = this.$refs.scroll.getScrollY();
-    console.log("离开时"+this.saveY)
-  },
-  mounted() {
-    // 1. 监听item中图片加载完成
-    const refresh = debounce(this.$refs.scroll.refresh, 10);
-    this.$bus.$on("itemImageLoad", () => {
-      // this.$refs.scroll.refresh();
-      // 防抖函数
-      refresh();
-    });
+    // 2.取消全局事件的监听
+    this.$bus.off('itemImageLoad',this.itemImgListener)
   },
   computed: {
     showGoods() {
@@ -185,6 +178,6 @@ export default {
   /* position: sticky; */
   /* top: 44px; */
   position: relative;
-  z-index: 9;
+  z-index: 2;
 }
 </style>
