@@ -1,24 +1,40 @@
 import {
   debounce
 } from './utils'
+import BackTop from "components/content/backTop/BackTop";
 
 export const itemListenerMixin = {
   data() {
     return {
-      itemImgListener: null
+      itemImgListener: null,
+      newRefresh: null
     }
   },
   mounted() {
     // 1. 监听item中图片加载完成
-    const refresh = debounce(this.$refs.scroll.refresh, 10);
+    this.newRefresh = debounce(this.$refs.scroll.refresh, 10);
     this.itemImgListener = () => {
       // this.$refs.scroll.refresh();
-      // 防抖函数
-      refresh();
+      this.newRefresh();
     }
     this.$bus.$on("itemImageLoad", this.itemImgListener);
-    console.log('混入的内容');
   },
-  components:{},
-  methods:{}
+  components: {},
+  methods: {}
+}
+
+export const backTopMixin = {
+  data() {
+    return {
+      isShowBackTop: false,
+    }
+  },
+  components: {
+    BackTop
+  },
+  methods: {
+    backClick() {
+      this.$refs.scroll.scrollTo(0, 0);
+    }
+  }
 }

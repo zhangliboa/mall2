@@ -35,7 +35,7 @@ export default {
     return {};
   },
   props:{
-    commentinfo:{
+    commentInfo:{
       type:Object,
       default(){
         return {}

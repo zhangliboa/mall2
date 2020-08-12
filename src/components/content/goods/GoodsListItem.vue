@@ -25,7 +25,12 @@ export default {
   },
   computed:{
     showImg(){
-      return this.goodsItem.show.img || this.goodsItem.img
+      // if(this.goodsItem.show){
+      //   return this.goodsItem.show.img
+      // }else{
+      //   return this.goodsItem.image
+      // }
+      return this.goodsItem.image || this.goodsItem.show.img
     }
   },
   methods:{

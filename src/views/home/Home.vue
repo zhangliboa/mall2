@@ -38,12 +38,12 @@ import NavBar from "components/common/navbar/NavBar";
 import TabControl from "components/common/tabcontrol/TabControl";
 import GoodsList from "components/content/goods/GoodsList";
 import Scroll from "components/common/scroll/Scroll";
-import BackTop from "components/content/backTop/BackTop";
 // import { debounce } from "common/utils";
-import { itemListenerMixin } from "common/mixin";
+import { itemListenerMixin,backTopMixin } from "common/mixin";
 
 import { getHomeMultidata, getHomeGoods } from "network/home";
 
+import {BACKTOP_DISTANCE,} from "common/const"
 export default {
   name: "Home",
   data() {
@@ -56,13 +56,12 @@ export default {
         sell: { page: 0, list: [] }
       },
       currentType: "pop",
-      isShowBackTop: false,
       tabOffsetTop: 0,
       isTabFixed: false,
       saveY: 0
     };
   },
-  mixins:[itemListenerMixin],
+  mixins:[itemListenerMixin,backTopMixin],
   components: {
     HomeSwiper,
     RecommendView,
@@ -71,7 +70,6 @@ export default {
     TabControl,
     GoodsList,
     Scroll,
-    BackTop
   },
   created() {
     // 请求轮播、推荐数据
@@ -89,7 +87,7 @@ export default {
     // 1.保存y值
     this.saveY = this.$refs.scroll.getScrollY();
     // 2.取消全局事件的监听
-    this.$bus.off('itemImageLoad',this.itemImgListener)
+    this.$bus.$off('itemImageLoad',this.itemImgListener)
   },
   computed: {
     showGoods() {
@@ -113,12 +111,9 @@ export default {
       this.$refs.tabControl1.currentIndex = index;
       this.$refs.tabControl2.currentIndex = index;
     },
-    backClick() {
-      this.$refs.scroll.scrollTo(0, 0);
-    },
     contentScroll(position) {
       // 判断BackTop是否显示
-      this.isShowBackTop = -position.y > 1000;
+      this.isShowBackTop = -position.y > BACKTOP_DISTANCE;
 
       // 判断tabControl是否吸顶
       this.isTabFixed = -position.y > this.tabOffsetTop;

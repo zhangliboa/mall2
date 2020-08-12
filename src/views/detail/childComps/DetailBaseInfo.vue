@@ -1,6 +1,6 @@
 <!--  -->
 <template>
-  <div v-if="Object.keys(goods).length !== 0"  class="base-info">
+  <div v-if="Object.keys(goods).length !== 0" class="base-info">
     <div class="info-title">{{goods.title}}</div>
     <div class="info-price">
       <span class="n-price">{{goods.newPrice}}</span>
@@ -28,14 +28,13 @@ export default {
     return {};
   },
   props: {
-      goods:{
-          type:Object,
-          default() {
-              return {}
-          }
-      }
+    goods: {
+      type: Object,
+      default() {
+        return {};
+      },
+    },
   },
-  
 };
 </script>
 <style scoped>
@@ -92,7 +91,9 @@ export default {
   justify-content: space-between;
   line-height: 60px;
 }
-
+.info-service-item {
+  flex-shrink: 0;
+}
 .info-service-item img {
   width: 14px;
   height: 14px;
