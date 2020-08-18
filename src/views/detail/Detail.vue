@@ -22,7 +22,7 @@ import {
   Goods,
   Shop,
   GoodsParam,
-  getRecommend
+  getRecommend,
 } from "network/detail";
 
 import Scroll from "components/common/scroll/Scroll";
@@ -36,11 +36,11 @@ import DetailParamInfo from "./childComps/DetailParamInfo";
 import DetailCommentInfo from "./childComps/DetailCommentInfo";
 import GoodsList from "components/content/goods/GoodsList";
 import DetailBottomBar from "./childComps/DetailBottomBar";
-import {
-  BACKTOP_DISTANCE
-} from "common/const"
+import { BACKTOP_DISTANCE } from "common/const";
 import { debounce } from "common/utils";
-import { itemListenerMixin,backTopMixin } from "common/mixin";
+import { itemListenerMixin, backTopMixin } from "common/mixin";
+
+import { mapActions } from "vuex";
 
 export default {
   name: "Detail",
@@ -56,10 +56,10 @@ export default {
       recommendList: [],
       themeTopYs: [],
       getThemeTopYs: null,
-      currentIndex: 0
+      currentIndex: 0,
     };
   },
-  mixins: [itemListenerMixin,backTopMixin],
+  mixins: [itemListenerMixin, backTopMixin],
   components: {
     Scroll,
     DetailNavBar,
@@ -108,8 +108,9 @@ export default {
     this.$bus.$off("itemImgLoad", this.itemImgListener);
   },
   methods: {
+    ...mapActions(["addCart"]),
     getDetailData() {
-      getDetail(this.iid).then(res => {
+      getDetail(this.iid).then((res) => {
         // 2.1获取结果
         const data = res.result;
         // 2.2获取顶部信息
@@ -161,10 +162,10 @@ export default {
           this.$refs.nav.currentIndex = this.currentIndex;
         }
       }
-       // 判断BackTop是否显示
+      // 判断BackTop是否显示
       this.isShowBackTop = -position.y > BACKTOP_DISTANCE;
     },
-    addToCart(){
+    addToCart() {
       // 1.创建对象
       let obj = {};
       // 2.添加对象信息
@@ -172,13 +173,19 @@ export default {
       obj.imgURL = this.topImages;
       obj.title = this.goods.title;
       obj.desc = this.goods.desc;
-      obj.newPrice = this.goods.newPrice;
+      obj.newPrice = this.goods.nowPrice;
       // 3.添加到store中
       // 改变store中的state的值要通过mutation和action
-      this.$store.dispatch('addCart',obj)
+      // this.$store.dispatch('addCart',obj)
+      this.addCart(obj)
+        .then((res) => {
+          this.$toast.show(res)
+        })
+        .catch((res) => {
+          console.log(res);
+        });
     },
-     
-  }
+  },
 };
 </script>
 <style scoped>

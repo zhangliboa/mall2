@@ -124,6 +124,7 @@ export default {
     swiperImgLoad() {
       // 获取tabControl的offsetTop
       this.tabOffsetTop = this.$refs.tabControl2.$el.offsetTop;
+    console.log(this.tabOffsetTop)
     },
 
     // -------网络请求的方法
